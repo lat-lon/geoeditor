@@ -45,8 +45,8 @@
 
 <repositories>
     <repository>
-      <id>latlon-repo</id>
-      <url>http://repo.lat-lon/nexus/content/groups/public/</url>
+      <id>tldageoeditor-repo</id>
+      <url>http://repo.lat-lon/nexus/content/groups/tldageoeditor/</url>
     </repository>
   </repositories>
 
@@ -63,8 +63,8 @@
 
   <pluginRepositories>
     <pluginRepository>
-      <id>latlon-repo</id>
-      <url>http://repo.lat-lon/nexus/content/groups/public/</url>
+      <id>plugin-repo</id>
+      <url>http://repo.lat-lon/nexus/content/shadows/central-m1/</url>
     </pluginRepository>
   </pluginRepositories>
 
