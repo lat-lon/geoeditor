@@ -25,6 +25,31 @@
 		When this is combined with geomajas-dep to use the snapshot back-end, then this dependency needs to be
 		mentioned first in the pom.
 	</description>
+  
+  <repositories>
+    <repository>
+      <id>tldageoeditor-repo</id>
+      <url>http://repo.lat-lon/nexus/content/groups/tldageoeditor/</url>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>tldageoeditor-releases</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/tldageoeditor-release/</url>
+    </repository>
+    <snapshotRepository>
+      <id>tldageoeditor-snapshots</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/tldageoeditor-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>tldageoeditor-repo</id>
+      <url>http://repo.lat-lon/nexus/content/groups/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
 
   <scm>
     <connection>scm:svn:https://svn.geomajas.org/majas/trunk/backend</connection>
