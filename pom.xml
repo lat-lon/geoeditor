@@ -56,17 +56,9 @@
   
   <repositories>
     <repository>
-      <id>latlon-repo</id>
-      <url>http://repo.lat-lon/nexus/content/groups/public/</url>
+      <id>tldageoeditor-repo</id>
+      <url>http://repo.lat-lon/nexus/content/groups/tldageoeditor/</url>
     </repository>
-    <repository>
-			<id>Geomajas-latest</id>
-			<name>Geomajas snapshot repository</name>
-			<url>http://apps.geomajas.org/nexus/content/groups/latest</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
   </repositories>
 
   <distributionManagement>

@@ -21,10 +21,10 @@
 	<description>Geomajas GWT application</description>
 	<url>http://www.geomajas.org/</url>
 
-<repositories>
+  <repositories>
     <repository>
-      <id>latlon-repo</id>
-      <url>http://repo.lat-lon/nexus/content/groups/public/</url>
+      <id>tldageoeditor-repo</id>
+      <url>http://repo.lat-lon/nexus/content/groups/tldageoeditor/</url>
     </repository>
   </repositories>
 
