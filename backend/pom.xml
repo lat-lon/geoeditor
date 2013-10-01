@@ -46,7 +46,7 @@
 
   <pluginRepositories>
     <pluginRepository>
-      <id>tldageoeditor-repo</id>
+      <id>plugin-repo</id>
       <url>http://repo.lat-lon/nexus/content/groups/public/</url>
     </pluginRepository>
   </pluginRepositories>
