@@ -123,14 +123,14 @@
     <module>layer</module>
     <module>layer-gwt</module>
     <module>layer-editor</module>
-    <module>layer-gwt-example</module>
+    <!--<module>layer-gwt-example</module>-->
   </modules>
 
   <profiles>
     <profile>
       <id>documentation</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <activeByDefault>false</activeByDefault>
       </activation>
       <modules>
         <module>documentation</module>

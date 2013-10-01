@@ -75,9 +75,9 @@
 
   <modules>
     <module>client</module>
-    <module>example-base</module>
-    <module>example-jar</module>
-    <module>example</module>
+    <!--<module>example-base</module>-->
+    <!--<module>example-jar</module>-->
+    <!--<module>example</module>-->
   </modules>
 
   <dependencyManagement>
@@ -173,7 +173,7 @@
     <profile>
       <id>default</id>
       <activation>
-        <activeByDefault>true</activeByDefault>
+        <activeByDefault>false</activeByDefault>
       </activation>
       <modules>
         <module>documentation</module>

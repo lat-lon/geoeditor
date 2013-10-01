@@ -20,6 +20,31 @@
 	<name>geomajas-widget-featureinfo plug-in parent</name>
 	<description>geomajas-widget-featureinfo plug-in grouping module</description>
 
+<repositories>
+    <repository>
+      <id>tldageoeditor-repo</id>
+      <url>http://repo.lat-lon/nexus/content/groups/tldageoeditor/</url>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>tldageoeditor-releases</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/tldageoeditor-release/</url>
+    </repository>
+    <snapshotRepository>
+      <id>tldageoeditor-snapshots</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/tldageoeditor-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>plugin-repo</id>
+      <url>http://repo.lat-lon/nexus/content/groups/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
 	<scm>
 		<connection>scm:svn:https://svn.geomajas.org/majas/trunk/plugin/geomajas-widget-featureinfo</connection>
 		<developerConnection>scm:svn:https://svn.geomajas.org/majas/trunk/plugin/geomajas-widget-featureinfo</developerConnection>
@@ -119,15 +144,15 @@
 	<modules>
 		<module>featureinfo</module>
 		<module>featureinfo-gwt</module>
-		<module>featureinfo-gwt-example-jar</module>
-		<module>featureinfo-gwt-example</module>
+		<!--<module>featureinfo-gwt-example-jar</module>-->
+		<!--<module>featureinfo-gwt-example</module>-->
 	</modules>
 
 	<profiles>
 		<profile>
 			<id>documentation</id>
 			<activation>
-				<activeByDefault>true</activeByDefault>
+				<activeByDefault>false</activeByDefault>
 			</activation>
 			<modules>
 				<module>documentation</module>
