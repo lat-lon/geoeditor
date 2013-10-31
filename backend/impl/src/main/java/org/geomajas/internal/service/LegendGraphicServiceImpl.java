@@ -17,6 +17,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -256,7 +258,7 @@ public class LegendGraphicServiceImpl implements LegendGraphicService {
 			Graphics2D graphics = image.createGraphics();
 			graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-			if (legendImageUrl != null && !"".equals(legendImageUrl)) {
+			if (legendImageUrl != null && !"".equals(legendImageUrl) && doesImageExist(legendImageUrl)) {
 				graphics.drawImage(getImage(legendImageUrl), 0, 0, width, height, null);
 			} else {
 				graphics.drawImage(getImage(getRasterImagePath()), 0, 0, width, height, null);
@@ -288,6 +290,19 @@ public class LegendGraphicServiceImpl implements LegendGraphicService {
 
 		return image;
 
+	}
+
+	private boolean doesImageExist(String legendImageUrl){
+	    try {
+	        HttpURLConnection connection = (HttpURLConnection) new URL(legendImageUrl).openConnection();
+	        connection.setRequestMethod("HEAD");
+	        String contentType = connection.getContentType();
+	        String type = contentType.split("/")[0];
+	        return (type.equals("image"));
+	    }
+	    catch (Exception e) {
+	        return false;
+	    }
 	}
 
 	private SimpleFeature createSampleFeature(VectorLayer vectorLayer) {
