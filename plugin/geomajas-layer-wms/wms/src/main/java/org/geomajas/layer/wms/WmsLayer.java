@@ -269,7 +269,7 @@ public class WmsLayer implements RasterLayer, LayerLegendImageSupport, LayerFeat
 	/** {@inheritDoc}. */
 	public List<Feature> getFeaturesByLocation(Coordinate layerCoordinate, double layerScale, int pixelTolerance)
 			throws LayerException {
-		if (!isEnableFeatureInfoSupport()) {
+		if (!isEnableFeatureInfoSupport() && !isEnableFeatureInfoAsGmlSupport()) {
 			return Collections.emptyList();
 		}
 		List<Feature> features = new ArrayList<Feature>();

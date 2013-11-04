@@ -10,6 +10,7 @@
  */
 package org.geomajas.layer.wms.command.wms;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -161,7 +162,7 @@ public class SearchByPointCommand implements Command<SearchByPointRequest, Searc
 	private boolean addFeatureInfoGmlLayerIfSupported(SearchByPointRequest request, SearchByPointResponse response,
 			Bbox mapBounds, Coordinate coordinate, Crs crs, String clientLayerId, Layer<?> layer)
 			throws LayerException, GeomajasException {
-		if (checkIfGmlFeatureInfoIsSupported(layer)) {
+		if (isFeatureInfoAsGmlSupported( layer ) || isFeatureInfoSupported( layer)) {
 			Crs layerCrs = layerService.getCrs(layer);
 			double layerScale = calculateLayerScale(crs, layerCrs, mapBounds, request.getScale());
 			Coordinate layerCoordinate = geoService.transform(coordinate, crs, layerCrs);
@@ -174,29 +175,28 @@ public class SearchByPointCommand implements Command<SearchByPointRequest, Searc
 		return false;
 	}
 
-	private List<Feature> retrieveFeaturesAsGml(SearchByPointRequest request, Layer<?> layer, double layerScale,
-			Coordinate layerCoordinate) throws LayerException {
-		if (layer instanceof LayerFeatureInfoSupport) {
-			return ((LayerFeatureInfoSupport) layer).getFeaturesByLocation(layerCoordinate, layerScale,
-					request.getPixelTolerance());
-		} else {
-			return ((LayerFeatureInfoAsGmlSupport) layer).getFeatureInfoAsGml(layerCoordinate, layerScale,
-					request.getPixelTolerance());
-		}
-	}
+    private List<Feature> retrieveFeaturesAsGml( SearchByPointRequest request, Layer<?> layer, double layerScale,
+                                                 Coordinate layerCoordinate )
+                            throws LayerException {
+        if ( isFeatureInfoSupported( layer ) ) {
+            return ( (LayerFeatureInfoSupport) layer ).getFeaturesByLocation( layerCoordinate, layerScale,
+                                                                              request.getPixelTolerance() );
+        } else if ( isFeatureInfoAsGmlSupported( layer ) ) {
+            return ( (LayerFeatureInfoAsGmlSupport) layer ).getFeatureInfoAsGml( layerCoordinate, layerScale,
+                                                                                 request.getPixelTolerance() );
+        }
+        return Collections.emptyList();
+    }
 
-	private boolean checkIfGmlFeatureInfoIsSupported(Layer<?> layer) {
-		// Check if the underlying layer implements one of the matching interfaces and has GFI enabled for at least one
-		// of them
-		boolean result = false;
-		if (layer instanceof LayerFeatureInfoAsGmlSupport) {
-			result = ((LayerFeatureInfoAsGmlSupport) layer).isEnableFeatureInfoAsGmlSupport();
-		}
-		if (layer instanceof LayerFeatureInfoSupport) {
-			result = result || ((LayerFeatureInfoSupport) layer).isEnableFeatureInfoSupport();
-		}
-		return result;
-	}
+    private boolean isFeatureInfoSupported( Layer<?> layer ) {
+        return layer instanceof LayerFeatureInfoSupport
+               && ( (LayerFeatureInfoSupport) layer ).isEnableFeatureInfoSupport();
+    }
+
+    private boolean isFeatureInfoAsGmlSupported( Layer<?> layer ) {
+        return layer instanceof LayerFeatureInfoAsGmlSupport
+               && ( (LayerFeatureInfoAsGmlSupport) layer ).isEnableFeatureInfoAsGmlSupport();
+    }
 
 	public SearchByPointResponse getEmptyCommandResponse() {
 		return new SearchByPointResponse();
