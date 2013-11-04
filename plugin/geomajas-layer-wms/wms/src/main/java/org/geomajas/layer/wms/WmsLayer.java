@@ -27,6 +27,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.geomajas.annotation.Api;
 import org.geomajas.configuration.Parameter;
@@ -60,6 +61,7 @@ import org.geotools.data.ows.Layer;
 import org.geotools.data.ows.SimpleHttpClient;
 import org.geotools.data.ows.StyleImpl;
 import org.geotools.data.ows.WMSCapabilities;
+import org.geotools.data.store.EmptyFeatureCollection;
 import org.geotools.data.wms.WebMapServer;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -71,6 +73,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.xml.sax.SAXException;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -269,32 +272,19 @@ public class WmsLayer implements RasterLayer, LayerLegendImageSupport, LayerFeat
 	/** {@inheritDoc}. */
 	public List<Feature> getFeaturesByLocation(Coordinate layerCoordinate, double layerScale, int pixelTolerance)
 			throws LayerException {
-		if (!isEnableFeatureInfoSupport()) {
+		if (!isEnableFeatureInfoSupport() && !isEnableFeatureInfoAsGmlSupport()) {
 			return Collections.emptyList();
 		}
 		List<Feature> features = new ArrayList<Feature>();
-		Resolution bestResolution = getResolutionForScale(layerScale);
-		RasterGrid grid = getRasterGrid(new Envelope(layerCoordinate), bestResolution.getTileWidth(),
-				bestResolution.getTileHeight());
-		int x = (int) (((layerCoordinate.x - grid.getLowerLeft().x) * bestResolution.getTileWidthPx()) / grid
-				.getTileWidth());
-		int y = (int) (bestResolution.getTileHeightPx() - (((layerCoordinate.y - grid.getLowerLeft().y) * bestResolution
-				.getTileHeightPx()) / grid.getTileHeight()));
-
-		Bbox layerBox = new Bbox(grid.getLowerLeft().x, grid.getLowerLeft().y, grid.getTileWidth(),
-				grid.getTileHeight());
-
 		InputStream stream = null;
 		try {
 			String url = buildRequestUrl(layerCoordinate, layerScale, IS_GML_REQUEST);
 			log.debug("getFeaturesByLocation: {} {} {} {}", new Object[] { layerCoordinate, layerScale, pixelTolerance,
 					url });
-			GML gml = new GML(Version.GML3);
 
 			stream = httpService.getStream(url, getLayerAuthentication(), getId());
-			FeatureCollection<?, SimpleFeature> collection = gml.decodeFeatureCollection(stream);
+            FeatureCollection<?, SimpleFeature> collection = decodeGmlFromStream( stream );
 			FeatureIterator<SimpleFeature> it = collection.features();
-
 			while (it.hasNext()) {
 				features.add(toDto(it.next()));
 			}
@@ -314,6 +304,16 @@ public class WmsLayer implements RasterLayer, LayerLegendImageSupport, LayerFeat
 
 		return features;
 	}
+
+    private FeatureCollection<?, SimpleFeature> decodeGmlFromStream( InputStream stream ) {
+        GML gml = new GML( Version.GML3 );
+        try {
+            return gml.decodeFeatureCollection( stream );
+        } catch ( Exception e ) {
+            // A class cast exception is thrown if the stream contains a service report. TODO: log the service exception
+        }
+        return new EmptyFeatureCollection( null );
+    }
 
 	@Override
 	public List<Feature> getFeatureInfoAsGml(Coordinate coordinate, double layerScale, int pixelTolerance)
