@@ -273,17 +273,6 @@ public class WmsLayer implements RasterLayer, LayerLegendImageSupport, LayerFeat
 			return Collections.emptyList();
 		}
 		List<Feature> features = new ArrayList<Feature>();
-		Resolution bestResolution = getResolutionForScale(layerScale);
-		RasterGrid grid = getRasterGrid(new Envelope(layerCoordinate), bestResolution.getTileWidth(),
-				bestResolution.getTileHeight());
-		int x = (int) (((layerCoordinate.x - grid.getLowerLeft().x) * bestResolution.getTileWidthPx()) / grid
-				.getTileWidth());
-		int y = (int) (bestResolution.getTileHeightPx() - (((layerCoordinate.y - grid.getLowerLeft().y) * bestResolution
-				.getTileHeightPx()) / grid.getTileHeight()));
-
-		Bbox layerBox = new Bbox(grid.getLowerLeft().x, grid.getLowerLeft().y, grid.getTileWidth(),
-				grid.getTileHeight());
-
 		InputStream stream = null;
 		try {
 			String url = buildRequestUrl(layerCoordinate, layerScale, IS_GML_REQUEST);
