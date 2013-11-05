@@ -180,21 +180,22 @@ public class CombinedLayertree extends LayerTreeBase {
 
 				// For vector layer; loop over the style definitions:
 				UserStyleInfo userStyle = layerInfo.getNamedStyleInfo().getUserStyle();
-				FeatureTypeStyleInfo info = userStyle.getFeatureTypeStyleList().get(0);
-				for (int i = 0; i < info.getRuleList().size(); i++) {
-					RuleInfo rule = info.getRuleList().get(i);
-					// use title if present, name if not
-					String title = (rule.getTitle() != null ? rule.getTitle() : rule.getName());
-					// fall back to style name
-					if (title == null) {
-						title = layerInfo.getNamedStyleInfo().getName();
-					}
+                if ( userStyle != null && !userStyle.getFeatureTypeStyleList().isEmpty() ) {
+                    FeatureTypeStyleInfo info = userStyle.getFeatureTypeStyleList().get( 0 );
+                    for ( int i = 0; i < info.getRuleList().size(); i++ ) {
+                        RuleInfo rule = info.getRuleList().get( i );
+                        // use title if present, name if not
+                        String title = ( rule.getTitle() != null ? rule.getTitle() : rule.getName() );
+                        // fall back to style name
+                        if ( title == null ) {
+                            title = layerInfo.getNamedStyleInfo().getName();
+                        }
 
-					LayerTreeLegendItemNode tn = new LayerTreeLegendItemNode(this, vl, i, title);
-					nodeList.add(tn);
-					tree.add(tn, this);
-				}
-
+                        LayerTreeLegendItemNode tn = new LayerTreeLegendItemNode( this, vl, i, title );
+                        nodeList.add( tn );
+                        tree.add( tn, this );
+                    }
+                }
 			} else if (layer instanceof RasterLayer) {
 				RasterLayer rl = (RasterLayer) layer;
 				LayerTreeLegendItemNode tn = new LayerTreeLegendItemNode(this, rl,

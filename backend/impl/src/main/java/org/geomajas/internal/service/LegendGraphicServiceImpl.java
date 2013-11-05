@@ -312,11 +312,20 @@ public class LegendGraphicServiceImpl implements LegendGraphicService {
 			if (vectorLayer != null) {
 				geomName = vectorLayer.getLayerInfo().getFeatureInfo().getGeometryType().getName();
 			}
-			type = DataUtilities.createType("Sample", geomName + ":Geometry");
+			String adjustedGeomName = adjustGeomName(geomName);
+			type = DataUtilities.createType("Sample", adjustedGeomName + ":Geometry");
 		} catch (SchemaException e) {
 			throw new IllegalStateException(e.getMessage(), e);
 		}
 		return SimpleFeatureBuilder.template(type, null);
+	}
+
+	private String adjustGeomName(String geomName) {
+		if (geomName.contains(":")) {
+			return geomName.split(":")[0];
+		} else {
+			return geomName;
+		}
 	}
 
 	private LiteShape2 getSampleShape(Symbolizer symbolizer, int width, int height) {
