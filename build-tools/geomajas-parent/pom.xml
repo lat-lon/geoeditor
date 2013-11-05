@@ -55,7 +55,7 @@
   <pluginRepositories>
     <pluginRepository>
       <id>plugin-repo</id>
-      <url>http://repo.lat-lon/nexus/content/shadows/central-m1/</url>
+      <url>http://repo.lat-lon/nexus/content/groups/tldageoeditor/</url>
     </pluginRepository>
   </pluginRepositories>
 
