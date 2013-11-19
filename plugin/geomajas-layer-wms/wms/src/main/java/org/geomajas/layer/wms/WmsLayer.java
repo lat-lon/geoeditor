@@ -38,6 +38,7 @@ import org.geomajas.geometry.Crs;
 import org.geomajas.geometry.CrsTransform;
 import org.geomajas.global.ExceptionCode;
 import org.geomajas.global.GeomajasException;
+import org.geomajas.internal.util.ResourceRetriever;
 import org.geomajas.layer.LayerException;
 import org.geomajas.layer.LayerLegendImageSupport;
 import org.geomajas.layer.RasterLayer;
@@ -183,6 +184,9 @@ public class WmsLayer implements RasterLayer, LayerLegendImageSupport, LayerFeat
 	@Autowired
 	private ResourceService resourceService;
 
+	@Autowired
+	private ResourceRetriever resourceRetriever;
+
 	private boolean enableFeatureInfoSupportAsGml;
 
 	private String legendImageUrl;
@@ -265,7 +269,7 @@ public class WmsLayer implements RasterLayer, LayerLegendImageSupport, LayerFeat
 	private void retrieveAndSetStaticLegendImageParameters(String path)  {
 		if (path != null && !"".equals(path))
 			try {
-				BufferedImage img = getImage(path);
+				BufferedImage img = resourceRetriever.getImage(path);
 				if (img == null) {
 					log.warn("Could not read static legend image!");
 				} else {
