@@ -54,6 +54,7 @@ import org.geomajas.security.SecurityContext;
 import org.geomajas.service.DispatcherUrlService;
 import org.geomajas.service.DtoConverterService;
 import org.geomajas.service.GeoService;
+import org.geomajas.service.ResourceService;
 import org.geotools.GML;
 import org.geotools.GML.Version;
 import org.geotools.data.ows.HTTPClient;
@@ -73,6 +74,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -805,41 +807,6 @@ public class WmsLayer implements RasterLayer, LayerLegendImageSupport, LayerFeat
 			}
 		} catch (IOException e) {
 			log.debug("Could not retrieve legend image height and size. Reason: ", e);
-		}
-	}
-	
-	private BufferedImage getImage(String href) throws GeomajasException {
-		InputStream is = null;
-		try {
-			Resource resource = resourceService.find(href);
-			if (resource != null) {
-				is = resource.getInputStream();
-			} else {
-				// backwards compatibility
-				resource = resourceService.find("images/" + href);
-				if (null == resource) {
-					resource = resourceService.find("image/" + href);
-				}
-				if (resource != null) {
-					is = resource.getInputStream();
-				} else {
-					is = ClassLoader.getSystemResourceAsStream(href);
-				}
-			}
-			if (is == null) {
-				throw new GeomajasException(ExceptionCode.RESOURCE_NOT_FOUND, href);
-			}
-			return ImageIO.read(is);
-		} catch (IOException io) {
-			throw new GeomajasException(io, ExceptionCode.RESOURCE_NOT_FOUND, href);
-		} finally {
-			if (is != null) {
-				try {
-					is.close();
-				} catch (IOException e) {
-					// ignore
-				}
-			}
 		}
 	}
 
