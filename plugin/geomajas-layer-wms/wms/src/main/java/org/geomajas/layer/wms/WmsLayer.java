@@ -27,7 +27,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.geomajas.annotation.Api;
 import org.geomajas.configuration.Parameter;
@@ -38,6 +37,7 @@ import org.geomajas.geometry.Crs;
 import org.geomajas.geometry.CrsTransform;
 import org.geomajas.global.ExceptionCode;
 import org.geomajas.global.GeomajasException;
+import org.geomajas.internal.util.ResourceRetriever;
 import org.geomajas.layer.LayerException;
 import org.geomajas.layer.LayerLegendImageSupport;
 import org.geomajas.layer.RasterLayer;
@@ -54,6 +54,7 @@ import org.geomajas.security.SecurityContext;
 import org.geomajas.service.DispatcherUrlService;
 import org.geomajas.service.DtoConverterService;
 import org.geomajas.service.GeoService;
+import org.geomajas.service.ResourceService;
 import org.geotools.GML;
 import org.geotools.GML.Version;
 import org.geotools.data.ows.HTTPClient;
@@ -73,7 +74,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.xml.sax.SAXException;
+import org.springframework.core.io.Resource;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -179,6 +180,12 @@ public class WmsLayer implements RasterLayer, LayerLegendImageSupport, LayerFeat
 	@Autowired
 	private SecurityContext securityContext;
 
+	@Autowired
+	private ResourceService resourceService;
+
+	@Autowired
+	private ResourceRetriever resourceRetriever;
+
 	private boolean enableFeatureInfoSupportAsGml;
 
 	private String legendImageUrl;
@@ -186,6 +193,8 @@ public class WmsLayer implements RasterLayer, LayerLegendImageSupport, LayerFeat
 	private int legendImageHeight;
 
 	private int legendImageWidth;
+
+	private String staticLegendImagePath;
 
 	/**
 	 * Return the layers identifier.
@@ -253,6 +262,22 @@ public class WmsLayer implements RasterLayer, LayerLegendImageSupport, LayerFeat
 			}
 		}
 		retrieveAndSetLegendImageParameters(baseWmsUrl);
+		retrieveAndSetStaticLegendImageParameters(staticLegendImagePath);
+	}
+
+	private void retrieveAndSetStaticLegendImageParameters(String path)  {
+		if (path != null && !"".equals(path))
+			try {
+				BufferedImage img = resourceRetriever.getImage(path);
+				if (img == null) {
+					log.warn("Could not read static legend image!");
+				} else {
+					legendImageWidth = img.getWidth();
+					legendImageHeight = img.getHeight();
+				}
+			} catch (GeomajasException e) {
+				log.warn("Could not read static legend image!");
+			}
 	}
 
 	/**
@@ -502,6 +527,15 @@ public class WmsLayer implements RasterLayer, LayerLegendImageSupport, LayerFeat
 	@Override
 	public String getLegendImageUrl() {
 		return legendImageUrl;
+	}
+
+	@Override
+	public String getStaticLegendImagePath() {
+		return staticLegendImagePath;
+	}
+
+	public void setStaticLegendImagePath(String staticLegendImagePath) {
+		this.staticLegendImagePath = staticLegendImagePath;
 	}
 
 	private String getWmsTargetUrl() {
