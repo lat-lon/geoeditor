@@ -10,6 +10,7 @@
  */
 package org.geomajas.layer.geotools;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ import org.geotools.data.simple.SimpleFeatureStore;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
+import org.geotools.index.CloseableIterator;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -406,16 +408,26 @@ public class GeoToolsLayer extends FeatureSourceRetriever implements VectorLayer
 		return feature;
 	}
 
-	@Override
-	public Object read(String featureId) throws LayerException {
-		Filter filter = filterService.createFidFilter(new String[] { featureId });
-		Iterator<?> iterator = getElements(filter, 0, 0);
-		if (iterator.hasNext()) {
-			return iterator.next();
-		} else {
-			throw new LayerException(ExceptionCode.LAYER_MODEL_FEATURE_NOT_FOUND, featureId);
-		}
-	}
+    @Override
+    public Object read( String featureId )
+                            throws LayerException {
+        Filter filter = filterService.createFidFilter( new String[] { featureId } );
+        Iterator<?> iterator = getElements( filter, 0, 0 );
+        try {
+            if ( iterator.hasNext() ) {
+                return iterator.next();
+            } else {
+                throw new LayerException( ExceptionCode.LAYER_MODEL_FEATURE_NOT_FOUND, featureId );
+            }
+        } finally {
+            if ( iterator instanceof Closeable )
+                try {
+                    ( (Closeable) iterator ).close();
+                } catch ( IOException e ) {
+                    log.warn( "Iterator could not be closed!", e );
+                }
+        }
+    }
 
 	@Override
 	public Envelope getBounds() throws LayerException {
@@ -474,41 +486,57 @@ public class GeoToolsLayer extends FeatureSourceRetriever implements VectorLayer
 		return this.featureModel;
 	}
 
-	private boolean exists(String featureId) throws LayerException {
-		Filter filter = filterService.createFidFilter(new String[] { featureId });
-		Iterator<?> iterator = getElements(filter, 0, 0);
-		return iterator.hasNext();
-	}
+    private boolean exists( String featureId )
+                            throws LayerException {
+        Filter filter = filterService.createFidFilter( new String[] { featureId } );
+        Iterator<?> iterator = getElements( filter, 0, 0 );
+        try {
+            return iterator.hasNext();
+        } finally {
+            if ( iterator instanceof Closeable )
+                try {
+                    ( (Closeable) iterator ).close();
+                } catch ( IOException e ) {
+                    log.warn( "Iterator could not be closed!", e );
+                }
+        }
+    }
 
 	/**
 	 * Adapter to java iterator.
 	 * 
 	 * @author Jan De Moerloose
 	 */
-	private static class JavaIterator implements Iterator<SimpleFeature> {
+    private static class JavaIterator implements Iterator<SimpleFeature>, Closeable {
 
-		private final FeatureIterator<SimpleFeature> delegate;
+        private final FeatureIterator<SimpleFeature> delegate;
 
-		public JavaIterator(FeatureIterator<SimpleFeature> delegate) {
-			this.delegate = delegate;
-		}
+        public JavaIterator( FeatureIterator<SimpleFeature> delegate ) {
+            this.delegate = delegate;
+        }
 
-		@Override
-		public boolean hasNext() {
-			return delegate.hasNext();
-		}
+        @Override
+        public boolean hasNext() {
+            return delegate.hasNext();
+        }
 
-		@Override
-		public SimpleFeature next() {
-			return delegate.next();
-		}
+        @Override
+        public SimpleFeature next() {
+            return delegate.next();
+        }
 
-		@Override
-		public void remove() {
-			throw new UnsupportedOperationException("Feature removal not supported, use delete(id) instead");
-		}
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException( "Feature removal not supported, use delete(id) instead" );
+        }
 
-	}
+        @Override
+        public void close()
+                                throws IOException {
+            delegate.close();
+        }
+
+    }
 
 	@Override
 	public DataStore getDataStore() {

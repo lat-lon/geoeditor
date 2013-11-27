@@ -11,6 +11,8 @@
 
 package org.geomajas.internal.layer.vector;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -100,36 +102,45 @@ public class GetFeaturesEachStep implements PipelineStep<GetFeaturesContainer> {
 			}
 
 			int count = 0;
-			while (it.hasNext()) {
-				log.debug("process feature");
-				Object featureObj = it.next();
-				Geometry geometry = layer.getFeatureModel().getGeometry(featureObj);
-				InternalFeature feature = convertFeature(featureObj, geometry, layer, transformation,
-						styleFilters, style.getLabelStyle(), featureIncludes);
-				if (null != feature) {
-					count++;
-					if (count > offset || forcePaging) {
-						features.add(feature);
+            try {
+                while ( it.hasNext() ) {
+                    log.debug( "process feature" );
+                    Object featureObj = it.next();
+                    Geometry geometry = layer.getFeatureModel().getGeometry( featureObj );
+                    InternalFeature feature = convertFeature( featureObj, geometry, layer, transformation,
+                                                              styleFilters, style.getLabelStyle(), featureIncludes );
+                    if ( null != feature ) {
+                        count++;
+                        if ( count > offset || forcePaging ) {
+                            features.add( feature );
 
-						if (null != geometry) {
-							Envelope envelope = geometry.getEnvelopeInternal();
-							if (null == bounds) {
-								bounds = new Envelope();
-							}
-							bounds.expandToInclude(envelope);
-						}
+                            if ( null != geometry ) {
+                                Envelope envelope = geometry.getEnvelopeInternal();
+                                if ( null == bounds ) {
+                                    bounds = new Envelope();
+                                }
+                                bounds.expandToInclude( envelope );
+                            }
 
-						if (features.size() == maxResultSize) {
-							break;
-						}
-					}
-				} else {
-					if (log.isDebugEnabled()) {
-						log.debug("feature not visible {}", layer.getFeatureModel().getId(featureObj));
-					}
-				}
-			}
-			response.setBounds(bounds);
+                            if ( features.size() == maxResultSize ) {
+                                break;
+                            }
+                        }
+                    } else {
+                        if ( log.isDebugEnabled() ) {
+                            log.debug( "feature not visible {}", layer.getFeatureModel().getId( featureObj ) );
+                        }
+                    }
+                }
+                response.setBounds( bounds );
+            } finally {
+                if ( it instanceof Closeable )
+                    try {
+                        ( (Closeable) it ).close();
+                    } catch ( IOException e ) {
+                        log.warn( "Iterator could not be closed!", e );
+                    }
+            }
 		}
 		log.debug("getElements done, bounds {}", response.getBounds());
 		log.trace("features {}", response.getFeatures());
