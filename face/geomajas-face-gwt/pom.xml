@@ -16,7 +16,6 @@
   <packaging>pom</packaging>
   <name>Geomajas gwt face</name>
   <description>Geomajas gwt face</description>
-  geomajas-gwt-example-base
   <repositories>
     <repository>
       <id>tldageoeditor-repo</id>
