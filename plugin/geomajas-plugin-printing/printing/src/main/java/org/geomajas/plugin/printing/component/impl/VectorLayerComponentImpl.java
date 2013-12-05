@@ -25,6 +25,7 @@ import org.geomajas.configuration.SymbolInfo;
 import org.geomajas.configuration.VectorLayerInfo;
 import org.geomajas.configuration.client.ClientMapInfo;
 import org.geomajas.layer.VectorLayerService;
+import org.geomajas.layer.feature.Attribute;
 import org.geomajas.layer.feature.InternalFeature;
 import org.geomajas.plugin.printing.component.LayoutConstraint;
 import org.geomajas.plugin.printing.component.PdfContext;
@@ -163,7 +164,7 @@ public class VectorLayerComponentImpl extends BaseLayerComponentImpl<VectorLayer
 			// order features, selected last
 			List<InternalFeature> orderedFeatures = new ArrayList<InternalFeature>();
 			for (InternalFeature feature : features) {
-				if (selectedFeatures.contains(feature.getId())) {
+				if (isFeatureSelected( feature )) {
 					orderedFeatures.add(feature);
 				} else {
 					orderedFeatures.add(0, feature);
@@ -181,7 +182,7 @@ public class VectorLayerComponentImpl extends BaseLayerComponentImpl<VectorLayer
 		}
 	}
 
-	private void drawLabel(PdfContext context, InternalFeature f) {
+    private void drawLabel(PdfContext context, InternalFeature f) {
 		LabelStyleInfo labelType = styleInfo.getLabelStyle();
 		String label = f.getLabel();
 		if (label != null) {
@@ -265,7 +266,7 @@ public class VectorLayerComponentImpl extends BaseLayerComponentImpl<VectorLayer
 		float[] dashArray = context.getDashArray(style.getDashArray());
 
 		// check if the feature is selected
-		if (selectedFeatures.contains(f.getId())) {
+		if (isFeatureSelected( f )) {
 			if (f.getGeometry() instanceof MultiPolygon || f.getGeometry() instanceof Polygon) {
 				style = mergeStyle(style, map.getPolygonSelectStyle());
 				fillColor = context.getColor(style.getFillColor(), style.getFillOpacity());
@@ -308,7 +309,14 @@ public class VectorLayerComponentImpl extends BaseLayerComponentImpl<VectorLayer
 		return merged;
 	}
 
-	/**
+    private boolean isFeatureSelected( InternalFeature feature ) {
+        Attribute<?> attribute = feature.getAttributes().get( "OBJECT_NR" );
+        if ( attribute != null && attribute.getValue() != null )
+            return selectedFeatures.contains( attribute.getValue().toString() );
+        return selectedFeatures.contains( feature.getId() );
+    }
+
+    /**
 	 * ???
 	 */
 	private final class MapToUserFilter implements CoordinateFilter {
