@@ -27,6 +27,7 @@ import org.geomajas.internal.service.crs.CrsFactory;
 import org.geomajas.layer.LayerException;
 import org.geomajas.layer.feature.InternalFeature;
 import org.geomajas.service.GeoService;
+import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
@@ -257,7 +258,12 @@ public final class GeoServiceImpl implements GeoService {
 			// as there was no transformable area configured, try to build it instead
 			Envelope transformableArea = null;
 			try {
-				org.opengis.geometry.Envelope ogEnvelope = CRS.getEnvelope(targetCrs);
+                org.opengis.geometry.Envelope ogEnvelope;
+                if ( "EPSG:25832".equalsIgnoreCase( targetCrs.getId() ) ) {
+                    ogEnvelope = new GeneralEnvelope( new double[] { 239359.868629255, 4295528.79420184 }, new double[] { 535459.483902448, 9320086.20690937} );
+                } else { 
+                    ogEnvelope = CRS.getEnvelope( targetCrs );
+                }
 				if (null != ogEnvelope) {
 					Envelope envelope = new Envelope(ogEnvelope.getLowerCorner().getCoordinate()[0], ogEnvelope
 							.getUpperCorner().getCoordinate()[0], ogEnvelope.getLowerCorner().getCoordinate()[1],
