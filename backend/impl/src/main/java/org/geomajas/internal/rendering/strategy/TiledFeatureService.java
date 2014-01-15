@@ -108,8 +108,11 @@ public class TiledFeatureService {
 					maxScreenBbox = JTS.toGeometry(getMaxScreenEnvelope(tile, panOrigin));
 				}
 				Geometry clipped = maxScreenBbox.intersection(feature.getGeometry());
-				vectorFeature.setClippedGeometry(clipped);
-				tile.addFeature(vectorFeature);
+                if (!clipped.isEmpty()){
+				    vectorFeature.setClippedGeometry(clipped);
+				    tile.addFeature(vectorFeature);
+                    log.warn("Ommited feature out of tile bounds: "+feature.getId());
+                }
 			} else {
 				tile.addFeature(feature);
 			}
