@@ -96,6 +96,8 @@ public class FeatureSourceRetriever {
 	 */
 	public SimpleFeatureSource getFeatureSource() throws LayerException {
 		try {
+			if ( dataStore == null )
+				throw new LayerException( ExceptionCode.DATASOURCE_UNAVAILABLE, featureSourceName );
 			return dataStore.getFeatureSource(featureSourceName);
 		} catch (IOException e) {
 			throw new LayerException(e, ExceptionCode.FEATURE_MODEL_PROBLEM, "Cannot find feature source "
