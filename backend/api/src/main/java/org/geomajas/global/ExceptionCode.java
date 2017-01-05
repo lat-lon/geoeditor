@@ -344,4 +344,6 @@ public interface ExceptionCode {
 	int CANNOT_CREATE_FEATURE_WITHOUT_GEOMETRY = 92;
 
 	int DATASOURCE_UNAVAILABLE = 93;
+
+	int SCHEMA_UNAVAILABLE = 94;
 }

@@ -21,6 +21,7 @@ import org.geomajas.global.ExceptionCode;
 import org.geomajas.layer.LayerException;
 import org.geomajas.layer.feature.Attribute;
 import org.geotools.data.DataStore;
+import org.geotools.data.SchemaNotFoundException;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -98,7 +99,9 @@ public class FeatureSourceRetriever {
 		try {
 			if ( dataStore == null )
 				throw new LayerException( ExceptionCode.DATASOURCE_UNAVAILABLE, featureSourceName );
-			return dataStore.getFeatureSource(featureSourceName);
+			return dataStore.getFeatureSource( featureSourceName );
+		} catch ( SchemaNotFoundException e) {
+			throw new LayerException(e, ExceptionCode.SCHEMA_UNAVAILABLE, featureSourceName);
 		} catch (IOException e) {
 			throw new LayerException(e, ExceptionCode.FEATURE_MODEL_PROBLEM, "Cannot find feature source "
 					+ featureSourceName);
