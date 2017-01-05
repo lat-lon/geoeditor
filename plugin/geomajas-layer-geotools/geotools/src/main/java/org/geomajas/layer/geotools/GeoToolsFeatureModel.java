@@ -23,10 +23,13 @@ import org.geomajas.layer.feature.FeatureModel;
 import org.geomajas.layer.shapeinmem.FeatureSourceRetriever;
 import org.geomajas.service.DtoConverterService;
 import org.geotools.data.DataStore;
+import org.geotools.data.SchemaNotFoundException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * GeoTools feature model. Should be able to use any GeoTools data source.
@@ -36,7 +39,9 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 public class GeoToolsFeatureModel extends FeatureSourceRetriever implements FeatureModel {
 
-	private final SimpleFeatureBuilder builder;
+	private final Logger log = LoggerFactory.getLogger( GeoToolsFeatureModel.class);
+
+	private SimpleFeatureBuilder builder;
 
 	private final int srid;
 
@@ -59,7 +64,12 @@ public class GeoToolsFeatureModel extends FeatureSourceRetriever implements Feat
 		setDataStore(dataStore);
 		setFeatureSourceName(featureSourceName);
 		this.srid = srid;
-		builder = new SimpleFeatureBuilder(getSchema());
+		try {
+			builder = new SimpleFeatureBuilder( getSchema() );
+		} catch ( LayerException e ) {
+			log.warn(" The layer could not be correctly initialized: " + featureSourceName );
+			builder = null;
+		}
 		this.converterService = converterService;
 	}
 
