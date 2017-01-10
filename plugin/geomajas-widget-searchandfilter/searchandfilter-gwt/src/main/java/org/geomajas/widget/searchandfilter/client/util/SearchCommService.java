@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.geomajas.command.CommandResponse;
 import org.geomajas.gwt.client.command.AbstractCommandCallback;
 import org.geomajas.gwt.client.command.GwtCommand;
 import org.geomajas.gwt.client.command.GwtCommandDispatcher;
@@ -212,6 +213,16 @@ public final class SearchCommService {
 					super.onCommunicationException(error);
 				}
 			}
+
+			@Override
+			public void onCommandException( CommandResponse response ) {
+				if ( null != onError ) {
+					onError.run();
+				} else {
+					super.onCommandException( response );
+				}
+			}
+
 		});
 	}
 
