@@ -18,7 +18,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.geomajas.plugin</groupId>
 	<artifactId>geomajas-widget-searchandfilter-all</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0-latlon-tlda-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>geomajas-widget-searchandfilter plug-in parent</name>
 	<description>geomajas-widget-searchandfilter plug-in grouping module</description>
@@ -90,7 +90,9 @@
 	<modules>
 		<module>searchandfilter</module>
 		<module>searchandfilter-gwt</module>
+		<!--
 		<module>searchandfilter-gwt-example</module>
+		-->
 	</modules>
 
 	<profiles>
