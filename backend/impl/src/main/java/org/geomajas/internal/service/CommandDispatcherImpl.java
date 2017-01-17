@@ -137,6 +137,8 @@ public final class CommandDispatcherImpl implements CommandDispatcher {
 				Locale localeObject = null;
 				if (null != locale) {
 					localeObject = new Locale(locale);
+				} else {
+					localeObject = Locale.GERMANY;
 				}
 				for (Throwable t : errors) {
 					String msg = getErrorMessage(t, localeObject);
