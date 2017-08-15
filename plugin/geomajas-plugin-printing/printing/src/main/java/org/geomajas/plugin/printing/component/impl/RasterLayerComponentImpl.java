@@ -523,6 +523,7 @@ public class RasterLayerComponentImpl extends BaseLayerComponentImpl<RasterLayer
 					result.setImage(outputStream.toByteArray());
 					return result;
 				} catch (Exception e) { // NOSONAR
+					log.error("Fetching image: error loading " + url, e);
 					triesLeft--;
 					if (triesLeft == 0) {
 						throw new ImageException(result.getRasterImage(), e);
