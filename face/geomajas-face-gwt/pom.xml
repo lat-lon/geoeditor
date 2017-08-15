@@ -19,25 +19,25 @@
   <repositories>
     <repository>
       <id>tldageoeditor-repo</id>
-      <url>http://repo.lat-lon/nexus/content/groups/tldageoeditor/</url>
+      <url>http://repo/nexus/content/groups/tldageoeditor/</url>
     </repository>
   </repositories>
 
   <distributionManagement>
     <repository>
       <id>tldageoeditor-releases</id>
-      <url>http://repo.lat-lon/nexus/content/repositories/tldageoeditor-release/</url>
+      <url>http://repo/nexus/content/repositories/tldageoeditor-release/</url>
     </repository>
     <snapshotRepository>
       <id>tldageoeditor-snapshots</id>
-      <url>http://repo.lat-lon/nexus/content/repositories/tldageoeditor-snapshots/</url>
+      <url>http://repo/nexus/content/repositories/tldageoeditor-snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 
   <pluginRepositories>
     <pluginRepository>
       <id>plugin-repo</id>
-      <url>http://repo.lat-lon/nexus/content/shadows/central-m1/</url>
+      <url>http://repo/nexus/content/shadows/central-m1/</url>
     </pluginRepository>
   </pluginRepositories>
 
